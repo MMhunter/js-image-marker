@@ -1,0 +1,26 @@
+{
+  "name": "js-image-marker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p . && node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MMhunter/js-image-marker.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MMhunter/js-image-marker/issues"
+  },
+  "homepage": "https://github.com/MMhunter/js-image-marker#readme",
+  "devDependencies": {
+    "systemjs-builder": "^0.16.12",
+    "ts-loader": "^3.2.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
+  }
+}
