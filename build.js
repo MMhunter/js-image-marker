@@ -3,10 +3,9 @@ var Builder = require('systemjs-builder');
 
 // optional constructor options
 // sets the baseURL and loads the configuration file
-var builder = new Builder('./dist','./system.config.js');
-
+var builder = new Builder('','./system.config.js');
 builder
-    .buildStatic('main.js', './dist/js-image-marker.js',{ globalName: 'JSImageMarker' })
+    .buildStatic('./dist/main.js', './dist/js-image-marker.js',{ minify: false, sourceMaps: true,globalName: 'JSImageMarker'})
     .then(function() {
         console.log('Build complete');
     })

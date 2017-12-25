@@ -3,6 +3,9 @@
   "rules": {
     "eofline": false,
     "no-console": false,
-    "no-trailing-whitespace": false
+    "no-trailing-whitespace": false,
+    "max-line-length": [0],
+    "no-this-assignment": false,
+    "variable-name": [true,"check-format","allow-leading-underscore"]
   }
 }

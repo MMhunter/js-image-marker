@@ -1,6 +1,9 @@
 System.config({
-    baseURL: '/dist/',
 
     // Set paths for third-party libraries as modules
-    defaultJSExtensions: true
+    defaultJSExtensions: true,
+
+    map:{
+        bluebird:"./node_modules/bluebird/js/browser/bluebird.js"
+    }
 });
