@@ -8,21 +8,24 @@ export class LayerManager {
 
     private ctx: CanvasRenderingContext2D;
 
+    private pendingDraw: boolean = false;
+
     private layersNeedRedraw: Layer[] = [];
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
         this.rootLayer = new RootLayer(this.ctx);
-        // test
-        this.ctx.canvas.addEventListener("mousemove", () => {
-            this.requestRedraw();
-        });
+        this.rootLayer.manager = this;
     }
 
     public requestRedraw(): void {
-        window.requestAnimationFrame(() => {
-            this.draw(true);
-        });
+        if (!this.pendingDraw) {
+            this.pendingDraw = true;
+            window.requestAnimationFrame(() => {
+                this.pendingDraw = false;
+                this.draw(true);
+            });
+        }
     }
 
     public addTopLayer(layer: Layer): void {
@@ -43,6 +46,12 @@ export class LayerManager {
         this.layersNeedRedraw.push(layer);
     }
 
+    public getRootLayer(): RootLayer {
+
+        return this.rootLayer;
+
+    }
+
     /**
      * draw the
      * @param {Layer} layer
@@ -52,6 +61,8 @@ export class LayerManager {
 
         if (ignoreCache || !layer.cache) {
             layer.cache = document.createElement("canvas");
+            layer.cache.width = layer.frame.size.width;
+            layer.cache.height = layer.frame.size.height;
             const ctx: CanvasRenderingContext2D = layer.cache.getContext("2d");
             layer.draw(ctx);
         }
@@ -68,5 +79,6 @@ export class LayerManager {
         this.ctx.clearRect(0, 0, this.ctx.canvas.offsetWidth, this.ctx.canvas.offsetHeight);
         this.drawLayer(this.rootLayer, ignoreCache);
     }
+
 
 }

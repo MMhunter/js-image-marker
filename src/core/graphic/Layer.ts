@@ -26,6 +26,11 @@ export abstract class Layer implements IDisposable {
     public frame: ILayerFrame;
 
     /**
+     * the layer manager that this layer is attached to
+     */
+    public manager: LayerManager;
+
+    /**
      * Current state of this layer.
      */
     protected state: LayerState;
@@ -35,12 +40,11 @@ export abstract class Layer implements IDisposable {
      */
     protected hidden: boolean = false;
 
-    /**
-     * the layer manager that this layer is attached to
-     */
-    protected manager: LayerManager;
-
     private _frameToRoot: ILayerFrame;
+
+    constructor(frame: ILayerFrame) {
+        this.frame = frame;
+    }
 
     public get frameToRoot(): ILayerFrame {
         if (!this._frameToRoot) {
@@ -79,7 +83,7 @@ export abstract class Layer implements IDisposable {
 
         this.cache = null;
         this._frameToRoot = null;
-
+        this.manager.requestRedraw();
         return;
 
     }
@@ -132,4 +136,17 @@ export interface ILayerFrame {
     
     offset: IOffset;
 
+}
+
+export function makerFrame(x: number, y: number, width: number, height: number){
+    return {
+        size: {
+            width: width,
+            height: height,
+        },
+        offset: {
+            x: x,
+            y: y,
+        },
+    };
 }
