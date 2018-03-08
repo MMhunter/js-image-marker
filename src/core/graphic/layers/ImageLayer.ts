@@ -26,7 +26,6 @@ export class ImageLayer extends Layer {
     protected drawAt(ctx: CanvasRenderingContext2D): void {
         if (this._image && this._loaded) {
             ctx.drawImage(this._image, 0, 0, this.frame.size.width, this.frame.size.height);
-
         }
 
         return;

@@ -1,6 +1,8 @@
 import {IDisposable} from "../Common";
 import {IOffset, ISize} from "./Graphic";
 import {LayerManager} from "./LayerManager";
+import {JMEvent} from "./Event";
+import {JMMouseDownEvent} from "./events/MouseDownEvent";
 
 export abstract class Layer implements IDisposable {
     
@@ -42,6 +44,8 @@ export abstract class Layer implements IDisposable {
 
     private _frameToRoot: ILayerFrame;
 
+    private listeners: {[key: string]: Array<(event?: JMEvent) => any>} = {};
+
     constructor(frame: ILayerFrame) {
         this.frame = frame;
     }
@@ -56,6 +60,38 @@ export abstract class Layer implements IDisposable {
         }
         return this._frameToRoot;
     }
+
+    public on(name: "mousedown" | "mouseup" | "mousemove" | "click", listener: (event?: JMEvent) => any) {
+        if (this.listeners[name] == null) {
+            this.listeners[name] = [];
+        }
+        this.listeners[name].unshift(listener);
+    }
+
+    public digestEvent(event: JMEvent) {
+        if (event.isPropagationStopped()) {
+            return;
+        }
+        this.subLayers.forEach((sublayer) => {
+            sublayer.digestEvent(event);
+        });
+        if (event.isPropagationStopped()) {
+            return;
+        }
+        this.dealWithEvent(event);
+    }
+
+    public dealWithEvent(event: JMEvent) {
+        if (this.listeners[event.name] && this.listeners[event.name].length > 0){
+            this.listeners[event.name].forEach((listener) => {
+                if (event.isPropagationStopped()) {
+                    return;
+                }
+                listener(event);
+            });
+        }
+    }
+
     /**
      * Get the layer's state
      * @returns {LayerState}
@@ -138,7 +174,7 @@ export interface ILayerFrame {
 
 }
 
-export function makerFrame(x: number, y: number, width: number, height: number){
+export function makeFrame(x: number, y: number, width: number, height: number): ILayerFrame {
     return {
         size: {
             width: width,
@@ -149,4 +185,13 @@ export function makerFrame(x: number, y: number, width: number, height: number){
             y: y,
         },
     };
+}
+
+export function isPointInFrame(x: number, y: number, frame: ILayerFrame): boolean {
+    if (x > frame.offset.x && x < frame.offset.x + frame.size.width) {
+        if (y > frame.offset.y && y < frame.offset.y + frame.size.height) {
+            return true;
+        }
+    }
+    return false;
 }

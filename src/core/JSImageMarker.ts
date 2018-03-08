@@ -1,6 +1,8 @@
-import {makerFrame} from "./graphic/Layer";
+import {makeFrame} from "./graphic/Layer";
 import {LayerManager} from "./graphic/LayerManager";
 import {ImageLayer} from "./graphic/layers/ImageLayer";
+import {JMMouseMoveEvent} from "./graphic/events/MouseMoveEvent";
+import {JMMouseDownEvent} from "./graphic/events/MouseDownEvent";
 
 export class JSImageMarker {
 
@@ -16,7 +18,7 @@ export class JSImageMarker {
         this.container = container;
         this.createCanvas();
         this.run().then((r: number) => {
-            alert(r);
+            // alert(r);
         });
     }
 
@@ -37,23 +39,40 @@ export class JSImageMarker {
 
         this.container.appendChild(canvas);
 
-        this.layerManager = new LayerManager(this.ctx);
+        this.layerManager = new LayerManager(canvas);
 
-        const image: ImageLayer = new ImageLayer("http://mfeducation.cn/images/2bintro.png", makerFrame(0, 0 , 100, 100));
-        const image2: ImageLayer = new ImageLayer("http://mfeducation.cn/images/2bintro.png", makerFrame(0, 0 , 100, 100));
+        const image: ImageLayer = new ImageLayer("http://mfeducation.cn/images/2bintro.png", makeFrame(30, 30 , 100, 100));
+
         this.layerManager.addTopLayer(image);
-        this.layerManager.addTopLayer(image2);
 
-        setInterval(() => {
-            image.frame.offset.x ++;
-            image2.frame.offset.y ++;
-            this.layerManager.requestRedraw();
-        }, 10);
+        this.dragTest(image);
     }
 
     private run(): Promise<any> {
 
         return Promise.resolve(123);
+
+    }
+
+    private dragTest(image: ImageLayer) {
+        let isDragging = false;
+        let oX = 0;
+        let oY = 0;
+        image.on("mousedown", (e: JMMouseDownEvent) => {
+            isDragging = true;
+            oX = e.offsetX;
+            oY = e.offsetY;
+        });
+        image.on("mouseup", (e) => {
+            isDragging = false;
+        });
+        image.on("mousemove", (e: JMMouseMoveEvent) => {
+            if (isDragging) {
+                image.frame.offset.x = e.canvasX - oX;
+                image.frame.offset.y = e.canvasY - oY;
+                image.setNeedsReDraw();
+            }
+        });
 
     }
 
