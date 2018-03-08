@@ -23,41 +23,7 @@ export class LayerManager {
         this.canvas = canvas;
         this.rootLayer = new RootLayer(this.ctx);
         this.rootLayer.manager = this;
-
-        // canvas.addEventListener("mousedown", (e) => {
-        //     this.getRootLayer().digestEvent(new JMMouseDownEvent(e));
-        // });
-        //
-        // canvas.addEventListener("mouseup", (e) => {
-        //     this.getRootLayer().digestEvent(new JMMouseUpEvent(e));
-        // });
-        //
-        // canvas.addEventListener("mousemove", (e) => {
-        //     this.getRootLayer().digestEvent(new JMMouseMoveEvent(e));
-        // });
-        canvas.addEventListener("mousedown", (e) => {
-            const path = this.findLayerPath(e.offsetX, e.offsetY);
-            const event = new JMMouseDownEvent(e, path);
-            path.forEach((layer) => {
-                layer.dealWithEvent(event);
-            });
-        });
-
-        canvas.addEventListener("mouseup", (e) => {
-            const path = this.findLayerPath(e.offsetX, e.offsetY);
-            const event = new JMMouseUpEvent(e, path);
-            path.forEach((layer) => {
-                layer.dealWithEvent(event);
-            });
-        });
-
-        canvas.addEventListener("mousemove", (e) => {
-            const path = this.findLayerPath(e.offsetX, e.offsetY);
-            const event = new JMMouseMoveEvent(e, path);
-            path.forEach((layer) => {
-                layer.dealWithEvent(event);
-            });
-        });
+        this.bindEvents();
     }
 
     public requestRedraw(): void {
@@ -141,6 +107,46 @@ export class LayerManager {
             }
         }
         return isInFrame;
+    }
+
+    /**
+     * bind basic events and let layers listen to them
+     */
+    private bindEvents(): void {
+        let _lastMouseDown: Layer = null;
+
+        this.canvas.addEventListener("mousedown", (e) => {
+            const path = this.findLayerPath(e.offsetX, e.offsetY);
+            const event = new JMMouseDownEvent(e, path);
+            path.forEach((layer) => {
+                layer.dealWithEvent(event);
+            });
+            _lastMouseDown = path[0];
+        });
+
+        this.canvas.addEventListener("mouseup", (e) => {
+            const path = this.findLayerPath(e.offsetX, e.offsetY);
+            const event = new JMMouseUpEvent(e, path);
+            path.forEach((layer) => {
+                layer.dealWithEvent(event);
+            });
+            // click event if path is the same;
+            if (_lastMouseDown === path[0]) {
+                const clickEvent = new JMMouseClickEvent(e, path);
+                path.forEach((layer) => {
+                    layer.dealWithEvent(clickEvent);
+                });
+            }
+            _lastMouseDown = null;
+        });
+
+        this.canvas.addEventListener("mousemove", (e) => {
+            const path = this.findLayerPath(e.offsetX, e.offsetY);
+            const event = new JMMouseMoveEvent(e, path);
+            path.forEach((layer) => {
+                layer.dealWithEvent(event);
+            });
+        });
     }
 
 }

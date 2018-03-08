@@ -73,6 +73,9 @@ export class JSImageMarker {
                 image.setNeedsReDraw();
             }
         });
+        image.on("click", (e: JMMouseMoveEvent) => {
+            console.log("success");
+        });
 
     }
 

@@ -188,8 +188,8 @@ export function makeFrame(x: number, y: number, width: number, height: number): 
 }
 
 export function isPointInFrame(x: number, y: number, frame: ILayerFrame): boolean {
-    if (x > frame.offset.x && x < frame.offset.x + frame.size.width) {
-        if (y > frame.offset.y && y < frame.offset.y + frame.size.height) {
+    if (x >= frame.offset.x && x <= frame.offset.x + frame.size.width) {
+        if (y >= frame.offset.y && y <= frame.offset.y + frame.size.height) {
             return true;
         }
     }
